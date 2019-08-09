@@ -10,9 +10,10 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
-.env*
+.env.testing
 .editorconfig
 .phpstorm.meta.php
 .styleci.yml
-.idea/*
+.idea
+.idea/
 
