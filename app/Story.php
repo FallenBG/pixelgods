@@ -57,6 +57,13 @@ class Story extends Model
 //        return $this->hasMany(UseSto::class, 'users_stories', 'story_id', 'user_id');
 
     }
+    public function member()
+    {
+        return $this->belongsTo(User::class, 'users_stories');
+//        return $this->belongsToMany(Story::class, 'users_stories', 'story_id', 'user_id');
+//        return $this->hasMany(UseSto::class, 'users_stories', 'story_id', 'user_id');
+
+    }
 
     public function entries()
     {

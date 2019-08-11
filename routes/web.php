@@ -24,6 +24,7 @@ Route::get('/story/{story}', 'StoryController@show');
 Route::get('/story/{story}/edit', 'StoryController@edit');
 
 
+Route::get('/story/{story}/chat', 'ChatController@show');
 Route::post('/story/{story}/chat', 'ChatController@update');
 
 

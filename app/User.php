@@ -71,4 +71,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Story::class, 'users_stories', 'user_id', 'story_id');
     }
+
+    public function chats()
+    {
+        return $this->hasMany(Chat::class)->orderBy('created_at');
+    }
 }

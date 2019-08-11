@@ -44,12 +44,27 @@ if (token) {
  */
 
 // import Echo from 'laravel-echo'
-
+//
 // window.Pusher = require('pusher-js');
-
+//
 // window.Echo = new Echo({
 //     broadcaster: 'pusher',
 //     key: process.env.MIX_PUSHER_APP_KEY,
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     encrypted: true
+// });
+
+import Echo from "laravel-echo"
+window.Pusher = require('pusher-js');
+
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: '178d146665bdcbbcd8a7',
+    cluster: 'eu',
+    forceTLS: true
+});
+
+// var channel = Echo.channel('my-channel');
+// channel.listen('my-event', function(data) {
+//     alert(JSON.stringify(data));
 // });

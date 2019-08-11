@@ -4,14 +4,33 @@
 
         <div class="card-body">
             <div class="scroll-box scroll-box-chat" id="chatBox" style="border:1px solid gray;" v-model="chatBox">
-                <p v-for="chat in chats">
-                    <b>{{ chat.user.name }}: </b>
-                    {{ chat.message }}
-                </p>
+                <ul class="chat">
+                    <li class="left clearfix" v-for="message in messages">
+                        <div class="chat-body clearfix">
+                            <div class="header">
+                                <strong class="primary-font">
+                                    {{ message.user.name }}
+                                </strong>
+                            </div>
+                            <p>
+                                {{ message.message }}
+                            </p>
+                        </div>
+                    </li>
+                </ul>
             </div>
 
-            <input class="form-control mt-2" ref="message" v-model="message" @keyup.enter="send()">
-            <button type="button" class="btn btn-primary btn-sm float-right mt-1" @click.prevent="send()">Send</button>
+            <div class="input-group">
+                <input id="btn-input" type="text" name="message" class="form-control input-sm"  v-model="newMessage" @keyup.enter="sendMessage">
+
+                <span class="input-group-btn">
+                    <button class="btn btn-primary btn-sm" id="btn-chat" @click="sendMessage">
+                        Send
+                    </button>
+                </span>
+            </div>
+            <!--<input class="form-control mt-2" ref="message" v-model="message" @keyup.enter="send()">-->
+            <!--<button type="button" class="btn btn-primary btn-sm float-right mt-1" @click.prevent="send()">Send</button>-->
 
         </div>
     </div>
@@ -20,20 +39,64 @@
 <script>
     export default {
         mounted() {
-            setTimeout(function () {
-                $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
-            }, 1000);
+            setTimeout(this.scrollToBottom, 1000);
 
         },
-        methods: {
-            refresh() {
 
-                console.log('asd');
+        created() {
+
+            this.fetchMessages();
+            console.log('chat.'+this.story.id);
+
+            Echo.join('chat.'+this.story.id)
+                .here(users => (this.users = users))
+                .joining(user => this.users.push(user))
+                .leaving(user => (this.users = this.users.filter(u => (u.id !== user.id))))
+                .listen('ChatEvent', (e) => {
+                    console.log('event triggered');
+                    this.messages.push({
+                        message: e.message.message,
+                        user: e.user
+                    });
+
+                    setTimeout(this.scrollToBottom, 10);
+                });
+        },
+
+        methods: {
+            scrollToBottom() {
+                $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
             },
+
+            sendMessage() {
+                this.$emit('ChatEvent', {
+                    user: this.user,
+                    message: this.newMessage
+                });
+
+                this.send();
+                this.messages.push({
+                    message: this.newMessage,
+                    user: this.user
+                });
+
+                this.newMessage = '';
+
+                setTimeout(this.scrollToBottom, 10);
+
+
+            },
+
+            fetchMessages() {
+                axios.get('/story/'+this.story.id+'/chat').then(response => {
+                    this.messages = response.data;
+                });
+            },
+
             send() {
 
                 console.log(this.user.id);
-                console.log(this.message);
+                console.log(this.newMessage);
 
                 // message = this.$refs.message.value;
                 // chatId = this.$refs.chatId.value;
@@ -41,7 +104,7 @@
                 // return;
                 return new Promise((resolve, reject) => {
                     // axios[requestType](url, this.data())
-                    axios['post'](url, {'message': this.message, 'user_id': this.user.id, 'story_id': this.story.id})
+                    axios['post'](url, {'message': this.newMessage, 'user_id': this.user.id, 'story_id': this.story.id})
                         .then(response => {
                             this.onSuccess(response.data);
 
@@ -58,7 +121,7 @@
             },
 
             onSuccess(data) {
-                console.log(data);
+                // console.log(data);
 
             // <p>
             //         <b>{{ chat.user.name }}: </b>
@@ -79,7 +142,9 @@
             return {
                 message: '',
                 chatId: '',
-                chatBox: ''
+                chatBox: '',
+                newMessage: '',
+                messages: []
             }
         },
     }

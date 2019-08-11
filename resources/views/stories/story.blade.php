@@ -5,7 +5,7 @@
     <?php /** @var App\StoriesEntries $entry */ ?>
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-9">
 
             <div class="card">
                 <div class="card-header"><h1>Story Title</h1></div>
@@ -50,7 +50,7 @@
 
 
         </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
 
             <div class="card">
                 <div class="card-body">
