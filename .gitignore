@@ -16,4 +16,6 @@ yarn-error.log
 .styleci.yml
 .idea
 .idea/
+.phpstorm.meta.php
+_ide_helper.php
 
