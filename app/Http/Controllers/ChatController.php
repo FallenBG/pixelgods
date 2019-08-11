@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Chat;
+use App\Events\ChatEvent;
+use App\Story;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
@@ -45,9 +47,14 @@ class ChatController extends Controller
      * @param  \App\Chat  $chat
      * @return \Illuminate\Http\Response
      */
-    public function show(Chat $chat)
+    public function show(Chat $chat, Story $story)
     {
+//        dd('kur');
         //
+        return $story->chats()->with('user')->get();
+//        $chats = $chat->story()->chats()->with('user')->get();
+//        dd($chats);
+//        $story->chats()->with('user')->get();
     }
 
     /**
@@ -73,9 +80,11 @@ class ChatController extends Controller
         //
         $validatedData = $this->validateProject();
         $resp = $chat->create($validatedData);
-//        dd($resp->user->name);
+
+//        \Log::debug('PUTKA');
+        broadcast(new ChatEvent($resp->user()->get()->first(), $resp))->toOthers();
+
         return ['response' => 'message sent!', 'message' => \request('message'), 'name' => $resp->user->name];
-//        dd($request);
 
     }
 

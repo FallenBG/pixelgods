@@ -6,6 +6,7 @@ use App\StoriesEntries;
 use App\Story;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Http\Request;
 
 class StoryController extends Controller
@@ -78,6 +79,8 @@ class StoryController extends Controller
      */
     public function show(Story $story )
     {
+        $this->authorize('update', $story);
+
         //
         $entries    = $story->entries()->get();
         $users      = $story->members()->get();

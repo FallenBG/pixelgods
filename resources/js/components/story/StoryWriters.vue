@@ -17,7 +17,7 @@
 <script>
     export default {
         mounted() {
-            console.log(this.users)
+            //console.log(this.users)
         },
         methods: {
             // update(jscolor) {
