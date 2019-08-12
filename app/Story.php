@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $title
  * @property string $description
  * @property string|null $genre
- * @property int|null $max_participant
+ * @property int|null $max_participants
  * @property int|null $chars_per_turn
  * @property int|null $skip_step
  * @property int|null $visible_history
@@ -82,5 +82,6 @@ class Story extends Model
 //            ->leftJoin('users', 'chats.user_id', 'users.id')
 //            ->orderBy('chats.created_at');
     }
+
 
 }

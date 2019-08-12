@@ -8,12 +8,9 @@
         <div class="col-md-9">
 
             <div class="card">
-                <div class="card-header"><h1>Story Title</h1></div>
-
+                <div class="card-header"><h1>{{ $story->title }}</h1></div>
 
                 <div class="card-body">
-
-                    {{--<story-main :entries="{{ json_encode($entries) }}"></story-main>--}}
                     <div class="scroll-box" id="storyBox" style="border:1px solid gray;">
                         @foreach($entries as $entry)
                             <p>
@@ -28,33 +25,35 @@
                             <button id="plus" onclick="resizeText(1)">+</button>
                             <button id="minus" onclick="resizeText(-1)">-</button>
                         </div>
-
                         <br>
                     </div>
-
                 </div>
-                {{--<div class="story-bg-image">--}}
-                    {{--a piece of paper background that will have the latest entries for the story--}}
-                {{--</div>--}}
 
-                <div class="card-footer">
-
-
-                    <textarea rows="10" class="width100p"></textarea>
-                    {{--<br>--}}
-
-                    <div>size and color controls for the text above</div>
-                    <button type="button" class="btn btn-primary btn-lg float-right">Send</button>
-                </div>
+                @if(auth()->user()->stories->contains($story))
+                    <div class="card-footer">
+                        <textarea rows="10" class="width100p"></textarea>
+                        <div>size and color controls for the text above</div>
+                        <button type="button" class="btn btn-primary btn-lg float-right">Send</button>
+                    </div>
+                @endif
             </div>
 
 
         </div>
+
         <div class="col-md-3">
 
             <div class="card">
                 <div class="card-body">
-                    <button type="button" class="btn btn-primary btn-lg width100p">Join The Story</button>
+                    @if(auth()->user()->ownedStories->contains($story))
+                        <a href="/story/{{ $story->id }}/edit">
+                            <button type="button" class="btn btn-primary btn-lg width100p">Manage The Story</button>
+                        </a>
+                    @elseif(auth()->user()->joinedStories->contains($story))
+                        <button type="button" class="btn btn-primary btn-lg width100p">Leave The Story</button>
+                    @else
+                        <button type="button" class="btn btn-primary btn-lg width100p">Join The Story</button>
+                    @endif
                 </div>
             </div>
 
@@ -68,11 +67,13 @@
             ></story-note>
 
             {{--@dd($story->chats()->get())--}}
-            <story-chat
-                    :user="{{ json_encode(auth()->user()) }}"
-                    :story="{{ json_encode($story) }}"
-                    :chats="{{ json_encode($chats) }}"
-            ></story-chat>
+            @if(auth()->user()->stories->contains($story))
+                <story-chat
+                        :user="{{ json_encode(auth()->user()) }}"
+                        :story="{{ json_encode($story) }}"
+                        :chats="{{ json_encode($chats) }}"
+                ></story-chat>
+            @endif
 
 
         </div>

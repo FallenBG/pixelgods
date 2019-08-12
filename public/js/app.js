@@ -2290,15 +2290,45 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    console.log(this.users);
+  mounted: function mounted() {// console.log(this.users)
   },
-  methods: {// update(jscolor) {
-    //     document.getElementById('rect').style.backgroundColor = '#' + jscolor
-    // }
+  methods: {
+    update: function update() {
+      console.log('asd');
+      axios.patch('/story/' + this.story.id + '/updateNote', {
+        notes: this.note
+      });
+      this.editing = false;
+    }
   },
-  props: ['story']
+  props: ['story', 'edit'],
+  data: function data() {
+    return {
+      editing: false,
+      note: this.story.notes
+    };
+  }
 });
 
 /***/ }),
@@ -54839,8 +54869,81 @@ var render = function() {
     _vm._m(0),
     _vm._v(" "),
     _c("div", { staticClass: "card-body" }, [
-      _vm._v("\n        " + _vm._s(_vm.story.notes) + "\n    ")
-    ])
+      _vm.editing
+        ? _c("div", [
+            _c("textarea", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.note,
+                  expression: "note"
+                }
+              ],
+              attrs: { cols: "30", rows: "20" },
+              domProps: { value: _vm.note },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.note = $event.target.value
+                }
+              }
+            })
+          ])
+        : _c("div", { domProps: { textContent: _vm._s(_vm.note) } })
+    ]),
+    _vm._v(" "),
+    _vm.edit
+      ? _c("div", { staticClass: "card-footer" }, [
+          !_vm.editing
+            ? _c(
+                "button",
+                {
+                  staticClass:
+                    "btn btn-primary btn-lg float-right width30p ml-3",
+                  attrs: { type: "submit" },
+                  on: {
+                    click: function($event) {
+                      _vm.editing = true
+                    }
+                  }
+                },
+                [_vm._v("Update")]
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.editing
+            ? _c(
+                "button",
+                {
+                  staticClass:
+                    "btn btn-primary btn-lg float-right width30p ml-3",
+                  attrs: { type: "submit" },
+                  on: { click: _vm.update }
+                },
+                [_vm._v("Save")]
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.editing
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-primary btn-lg float-right width30p",
+                  attrs: { ype: "submit" },
+                  on: {
+                    click: function($event) {
+                      _vm.editing = false
+                    }
+                  }
+                },
+                [_vm._v("Cancle")]
+              )
+            : _vm._e()
+        ])
+      : _vm._e()
   ])
 }
 var staticRenderFns = [
@@ -72214,6 +72317,52 @@ function resizeText(multiplier) {
   }
 
   document.getElementById('storyBox').style.fontSize = parseFloat(document.getElementById('storyBox').style.fontSize) + multiplier * 0.2 + "em";
+}
+
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip();
+});
+/**
+ * Ugly way to handle and mostly update the story Published and Finished buttons
+ *
+ * @param field - string (published|finished)
+ * @param value - bool
+ * @param url   - onclick event url to which we post the request
+ * @returns {Promise<any>}
+ */
+
+function publishFinishStory(field, value, url) {
+  // console.log(url);
+  return new Promise(function (resolve, reject) {
+    axios['post'](url, {
+      name: field,
+      value: value
+    }).then(function (response) {
+      if (field == 'finished' && value == 1) {
+        document.getElementById(field).innerHTML = 'Unfinish the Story';
+        document.getElementById(field).setAttribute("onClick", "publishFinishStory('" + field + "', '0', '" + url + "')");
+      } else if (field == 'finished' && value == 0) {
+        document.getElementById(field).innerHTML = 'Finish the Story';
+        document.getElementById(field).setAttribute("onClick", "publishFinishStory('" + field + "', '1', '" + url + "')");
+      } else if (field == 'published' && value == 1) {
+        document.getElementById(field).innerHTML = 'Unpublish the Story';
+        document.getElementById(field).setAttribute("onClick", "publishFinishStory('" + field + "', '0', '" + url + "')");
+      } else {
+        document.getElementById(field).innerHTML = 'Publish the Story';
+        document.getElementById(field).setAttribute("onClick", "publishFinishStory('" + field + "', '1', '" + url + "')");
+      }
+
+      resolve(response.data);
+    })["catch"](function (error) {
+      console.log(error); // console.log(field);
+      // reject(error.response.data);
+    }); // .catch(this.onFail.bind(this))
+    // .catch(error => this.errors.record(error.response.data.errors));
+  });
+}
+
+function publishStory(element) {
+  console.log(element);
 }
 
 /***/ }),

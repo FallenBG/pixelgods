@@ -19,7 +19,7 @@ class CreateStoriesTable extends Migration
             $table->text('title');
             $table->text('description');
             $table->text('genre')->nullable();
-            $table->integer('max_participant')->nullable();
+            $table->integer('max_participants')->nullable();
             $table->integer('chars_per_turn')->nullable();
             $table->integer('skip_step')->nullable();
             $table->integer('visible_history')->nullable();

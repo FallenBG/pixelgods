@@ -8,6 +8,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class StoryController extends Controller
 {
@@ -29,24 +30,10 @@ class StoryController extends Controller
      */
     public function index()
     {
-        
-//        dd(auth()->id());
-//        $stories = $story->where('owner_id', auth()->user());
         $ownedStories = auth()->user()->ownedStories()->orderBy('updated_at', 'desc')->get();
-//        $members = [];
-        $ownedStories->each(function ($story){
-//            echo $story->members()->count();
-        });
-//        dd($members);
         $joinedStories = auth()->user()->joinedStories()->orderBy('updated_at', 'desc')->get();
-        $joinedStories->each(function ($story){
-//            echo $story->members()->count();
-//            $story['participants'] = $story->members()->count();
-        });
 
-        $aaaa = 'https://vuetable.ratiw.net/api/users';
-//        dd($stories);
-        return view('home', compact(['ownedStories', 'joinedStories', 'aaaa']));
+        return view('home', compact(['ownedStories', 'joinedStories']));
 
     }
 
@@ -57,7 +44,12 @@ class StoryController extends Controller
      */
     public function create()
     {
-        //
+        $this->middleware('auth');
+
+//        $entries    = $story->entries()->get();
+//        $users      = $story->members()->get();
+
+        return view('stories.create', compact(['entries', 'users', 'story']));
     }
 
     /**
@@ -79,7 +71,7 @@ class StoryController extends Controller
      */
     public function show(Story $story )
     {
-        $this->authorize('update', $story);
+//        $this->authorize('update', $story);
 
         //
         $entries    = $story->entries()->get();
@@ -97,20 +89,107 @@ class StoryController extends Controller
      */
     public function edit(Story $story)
     {
-        //
+        $this->authorize('manage', $story);
+
+        $entries    = $story->entries()->get();
+        $users      = $story->members()->get();
+
+        return view('stories.edit', compact(['entries', 'users', 'story']));
+
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Story  $story
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Story $story
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function update(Request $request, Story $story)
     {
-        //
+
+        $this->authorize('manage', $story);
+        $attributes = \Request::validate([
+            'title'             => ['required', 'max:75'],
+            'description'       => ['required', 'max:500'],
+            'genre'             => ['required', 'max:100'],
+            'max_participants'  => ['required', 'numeric', 'min:1'],
+            'skip_step'         => ['required', 'numeric', 'min:1'],
+            'chars_per_turn'    => ['required', 'numeric', 'min:1'],
+            'visible_history'   => ['required', 'numeric', 'min:1']
+        ]);
+        $public = isset($request->public) ? 1 : 0;
+        $attributes['public'] = $public;
+
+        $story->update($attributes);
+
+
+//        dd($request);
+
+        return redirect()->back();
+
+
     }
+
+    /**
+     * Update Finished/Published properties
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Story $story
+     * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function updateFinishPublish(Story $story)
+    {
+        $this->authorize('manage', $story);
+        $attributes = \Request::validate(
+            [
+                'value' => [
+                    'required',
+                    'bool',
+                ],
+                'name' => [
+                    'required',
+                    Rule::in(['finished', 'published'])
+                    
+                ]
+            ]
+        );
+
+        $name =  $attributes['name'];
+        $story->$name = $attributes['value'];
+        $story->save();
+
+        return json_encode(['message' => 'success']);
+    }
+
+
+    /**
+     * Update Finished/Published properties
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Story $story
+     * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function updateNote(Story $story)
+    {
+        $this->authorize('manage', $story);
+        $attributes = \Request::validate(
+            [
+                'notes' => [
+                    'required',
+                    'max:10000',
+                ]
+            ]
+        );
+
+        $story->update($attributes);
+
+        return json_encode(['message' => 'success']);
+    }
+
 
     /**
      * Remove the specified resource from storage.

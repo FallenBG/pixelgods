@@ -20,8 +20,12 @@ Auth::routes();
 Route::get('/home', 'HomeController@index');
 
 Route::get('/stories', 'StoryController@index');
+Route::get('/story/create', 'StoryController@create');
 Route::get('/story/{story}', 'StoryController@show');
 Route::get('/story/{story}/edit', 'StoryController@edit');
+Route::post('/story/{story}/updateFinishPublish', 'StoryController@updateFinishPublish');
+Route::post('/story/{story}/update', 'StoryController@update');
+Route::patch('/story/{story}/updateNote', 'StoryController@updateNote');
 
 
 Route::get('/story/{story}/chat', 'ChatController@show');

@@ -620,12 +620,6 @@ label.mt10.valid {
 }
 
 
-
-
-
-
-
-
 .chat {
     list-style: none;
     margin: 0;
@@ -662,6 +656,9 @@ label.mt10.valid {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
     background-color: #555;
 }
-/*--------------------------
-    Some requires from the theme css files
------------------------------*/
+
+
+
+button.width30p {
+    width: 30%;
+}

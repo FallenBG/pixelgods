@@ -26,6 +26,8 @@ Vue.component('story-note', require('./components/story/StoryNote').default);
 Vue.component('story-chat', require('./components/story/StoryChat').default);
 Vue.component('vuetable', require('./App.vue').default);
 
+
+
 Vue.config.productionTip = false;
 /**
  * Next, we will create a fresh Vue application instance and attach it to
