@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $title
  * @property string $description
  * @property string|null $genre
- * @property int|null $max_participant
+ * @property int|null $max_participants
  * @property int|null $chars_per_turn
  * @property int|null $skip_step
  * @property int|null $visible_history
@@ -83,4 +83,9 @@ class Story extends Model
 //            ->orderBy('chats.created_at');
     }
 
+    public function statistics()
+    {
+        return $this->hasMany(StoryStatistics::class);
+//                    ->where($column);
+    }
 }

@@ -67,12 +67,6 @@
 }
 
 
-
-
-
-
-
-
 .chat {
     list-style: none;
     margin: 0;
@@ -109,6 +103,27 @@
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
     background-color: #555;
 }
-/*--------------------------
-    Some requires from the theme css files
------------------------------*/
+
+
+
+button.width30p {
+    width: 30%;
+}
+
+
+
+
+table.ordinary {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.ordinary th, td {
+    text-align: center;
+    padding: 8px;
+}
+
+table.ordinary tr:nth-child(even) {
+    background-color: #f2f2fd;
+}
+table.ordinary tr:nth-child(odd) {background-color: #fffff8;}

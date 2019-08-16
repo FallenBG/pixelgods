@@ -46,14 +46,12 @@
         created() {
 
             this.fetchMessages();
-            console.log('chat.'+this.story.id);
 
             Echo.join('chat.'+this.story.id)
                 .here(users => (this.users = users))
                 .joining(user => this.users.push(user))
                 .leaving(user => (this.users = this.users.filter(u => (u.id !== user.id))))
                 .listen('ChatEvent', (e) => {
-                    console.log('event triggered');
                     this.messages.push({
                         message: e.message.message,
                         user: e.user
@@ -94,16 +92,8 @@
             },
 
             send() {
-
-                console.log(this.user.id);
-                console.log(this.newMessage);
-
-                // message = this.$refs.message.value;
-                // chatId = this.$refs.chatId.value;
                 let url = '/story/'+this.story.id+'/chat';
-                // return;
                 return new Promise((resolve, reject) => {
-                    // axios[requestType](url, this.data())
                     axios['post'](url, {'message': this.newMessage, 'user_id': this.user.id, 'story_id': this.story.id})
                         .then(response => {
                             this.onSuccess(response.data);

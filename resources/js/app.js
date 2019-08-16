@@ -24,7 +24,12 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 Vue.component('story-writers', require('./components/story/StoryWriters').default);
 Vue.component('story-note', require('./components/story/StoryNote').default);
 Vue.component('story-chat', require('./components/story/StoryChat').default);
+Vue.component('story-button', require('./components/story/StoryButton').default);
+Vue.component('story-body', require('./components/story/StoryBody').default);
+Vue.component('story-row', require('./components/story/StoryRow').default);
 Vue.component('vuetable', require('./App.vue').default);
+
+
 
 Vue.config.productionTip = false;
 /**

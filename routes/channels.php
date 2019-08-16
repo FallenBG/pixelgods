@@ -21,12 +21,15 @@
 
 //Broadcast::channel('chat.{storyId}', function ($user, $storyId) {
 Broadcast::channel('chat.{storyId}', function ($user, $storyId) {
-    if ($user->id == '5') {
-        return false;
-    }
-
-    if ($user->joinedStories()->where('story_id', '=', $storyId) || $user->ownedStories()->where('id', '=', $storyId)) {
+    if ($user->stories->contains($storyId)) {
         return array('name' => $user->name);
     }
 
+
+});
+
+Broadcast::channel('story.{storyId}', function ($user, $storyId) {
+    if ($user->stories->contains($storyId)) {
+        return array('name' => $user->name);
+    }
 });

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\StoryEvent;
 use App\StoriesEntries;
+use App\Story;
+use App\StoryStatistics;
 use Illuminate\Http\Request;
 
 class StoriesEntriesController extends Controller
@@ -44,9 +47,18 @@ class StoriesEntriesController extends Controller
      * @param  \App\StoriesEntries  $storiesEntries
      * @return \Illuminate\Http\Response
      */
-    public function show(StoriesEntries $storiesEntries)
+    public function show(Story $story)
     {
-        //
+        // As the decision to skip step is taken in the vue template we need to send enough records to determine it.
+        $take = $story->visible_history;
+        if ($story->visible_history < $story->skip_step) {
+            $take = $story->skip_step;
+        }
+        // Get all the story entries with the user, order them by created time desc(latest)
+        // and take only the amount we have set in this story visible_history and then reverse their values.
+        return $story->entries()->with('user')
+            ->orderBy('created_at', 'desc')
+            ->take($take)->get()->reverse()->values();
     }
 
     /**
@@ -65,11 +77,18 @@ class StoriesEntriesController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\StoriesEntries  $storiesEntries
-     * @return \Illuminate\Http\Response
+     * @return array
      */
-    public function update(Request $request, StoriesEntries $storiesEntries)
+    public function update(Story $story, StoriesEntries $storiesEntries)
     {
-        //
+        $validatedData = $this->validateData($story->chars_per_turn);
+        $resp = $storiesEntries->create($validatedData);
+
+        $this->statistics($resp);
+
+        broadcast(new StoryEvent($resp->user()->get()->first(), $resp))->toOthers();
+
+        return ['response' => 'message sent!', 'message' => \request('entry'), 'name' => $resp->user->name];
     }
 
     /**
@@ -81,5 +100,43 @@ class StoriesEntriesController extends Controller
     public function destroy(StoriesEntries $storiesEntries)
     {
         //
+    }
+
+    public function validateData($chars_per_turn)
+    {
+        $attributes = \Request::validate(
+            [
+                'entry'       => [
+                    'required',
+                    'max:'.$chars_per_turn
+                ],
+                'story_id'       => [
+                    'required'
+                ]
+            ]
+        );
+
+        $attributes['user_id'] = auth()->id();
+        $attributes['deleted'] = 0;
+
+        return $attributes;
+
+    }//end validateProject()
+
+    /**
+     * Update the statistics based on user and story.
+     *
+     * @param $resp
+     */
+    private function statistics($resp) {
+        $statistics = StoryStatistics::firstOrNew([
+            'user_id' => $resp->user_id,
+            'story_id' => $resp->story_id
+        ]);
+
+        $statistics->words += count(explode(' ', $resp->entry));
+        $statistics->chars += strlen($resp->entry);
+        $statistics->entries++;
+        $statistics->save();
     }
 }

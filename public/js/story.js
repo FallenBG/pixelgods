@@ -1,12 +1,21 @@
 function update(jscolor) {
-  // 'jscolor' instance can be used as a string
-  document.getElementById('storyBox').style.backgroundColor = '#' + jscolor;
+  var box = jscolor.valueElement.attributes[0].value; // 'jscolor' instance can be used as a string
+
+  document.getElementById(box).style.backgroundColor = '#' + jscolor;
 }
 
-function resizeText(multiplier) {
-  if (document.getElementById('storyBox').style.fontSize == "") {
-    document.getElementById('storyBox').style.fontSize = "1.0em";
+function resizeText(multiplier, box) {
+  if (document.getElementById(box).style.fontSize == "") {
+    document.getElementById(box).style.fontSize = "1.0em";
   }
 
-  document.getElementById('storyBox').style.fontSize = parseFloat(document.getElementById('storyBox').style.fontSize) + multiplier * 0.2 + "em";
+  document.getElementById(box).style.fontSize = parseFloat(document.getElementById(box).style.fontSize) + multiplier * 0.2 + "em";
+}
+
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip();
+});
+
+function publishStory(element) {
+  console.log(element);
 }

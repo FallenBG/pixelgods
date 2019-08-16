@@ -69,11 +69,28 @@ class User extends Authenticatable
 
     public function joinedStories()
     {
+//        return $this->hasMany(Story::class, 'users_stories', 'user_id', 'story_id');
         return $this->belongsToMany(Story::class, 'users_stories', 'user_id', 'story_id');
     }
 
     public function chats()
     {
         return $this->hasMany(Chat::class)->orderBy('created_at');
+    }
+
+    /**
+     * Return all stories that the user owns or is part of.
+     */
+    public function stories()
+    {
+        return $this->ownedStories()
+                    ->leftJoin('users_stories', 'stories.id', '=', 'users_stories.story_id')
+                    ->orWhere('users_stories.user_id', '=', $this->id);
+    }
+
+    public function statistics()
+    {
+        return $this->hasMany(StoryStatistics::class);
+//                    ->where($column);
     }
 }
