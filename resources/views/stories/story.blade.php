@@ -3,42 +3,71 @@
 @section('content')
     <?php /** @var App\Story $story */ ?>
     <?php /** @var App\StoriesEntries $entry */ ?>
+    <?php /** @var App\StoryStatistics $stat */ ?>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-9">
-
-            <div class="card">
-                <div class="card-header"><h1>{{ $story->title }}</h1></div>
-
-                <div class="card-body">
-                    <div class="scroll-box" id="storyBox" style="border:1px solid gray;">
-                        @foreach($entries as $entry)
-                            <p>
-                                {{ $entry->entry }} <b>({{ $entry->user->name }})</b>
-                            </p>
-                        @endforeach
-                    </div>
-                    <div>
-                        <input class="jscolor {onFineChange:'update(this)'} form-control width80 float-right mt-2 ml-4">
-                        <div class="float-right mt-3">
-                            Font size:
-                            <button id="plus" onclick="resizeText(1)">+</button>
-                            <button id="minus" onclick="resizeText(-1)">-</button>
-                        </div>
-                        <br>
-                    </div>
-                </div>
-
-                @if(auth()->user()->stories->contains($story))
-                    <div class="card-footer">
-                        <textarea rows="10" class="width100p"></textarea>
-                        <div>size and color controls for the text above</div>
-                        <button type="button" class="btn btn-primary btn-lg float-right">Send</button>
-                    </div>
-                @endif
+            <div class="row">
+{{--@dd($entries)--}}
+                <story-body :user="{{ json_encode(auth()->user()) }}"
+                            :story="{{ json_encode($story) }}"
+                            :contains="{{ json_encode(auth()->user()->stories->contains($story)) }}"
+                ></story-body>
             </div>
 
+            <div class="row mt-5">
 
+                <div class="col-md-6 float-right">
+                    <table class="ordinary">
+                        <tr>
+                            <th style="text-align: left;">Writer</th>
+                            <th>Words</th>
+                            <th>Chars</th>
+                            <th>Entries</th>
+                        </tr>
+                        @foreach($stats as $stat)
+                            <tr>
+                                <td style="text-align: left;">{{ $stat->user->name }}</td>
+                                <td>{{ $stat->words }} ({{ round(($stat->words*100)/$perStats['totalWords']) }}%)</td>
+                                <td>{{ $stat->chars }} ({{ round(($stat->chars*100)/$perStats['totalChars']) }}%)</td>
+                                <td>{{ $stat->entries }} ({{ round(($stat->entries*100)/$perStats['totalEntries']) }}%)</td>
+                            </tr>
+                        @endforeach
+                    </table>
+                </div>
+
+                <div class="col-md-6">
+                    <story-row
+                            :name="{{ json_encode('Created') }}"
+                            :value="{{ json_encode(\Carbon\Carbon::parse($story->created_at)->diffForHumans().' by '.$story->owner->name)}}"
+                    ></story-row>
+                    <story-row
+                            :name="{{ json_encode('Updated') }}"
+                            :value="{{ json_encode(\Carbon\Carbon::parse($story->updated_at)->diffForHumans()) }}"
+                    ></story-row>
+                    <story-row
+                            :name="{{ json_encode('Participants') }}"
+                            :value="{{ json_encode($story->members->count()+1) }}"
+                    ></story-row>
+                    <story-row
+                            :name="{{ json_encode('Pages') }}"
+                            :value="{{ json_encode($perStats['pages']) }}"
+                    ></story-row>
+                    <story-row
+                            :name="{{ json_encode('Total Words') }}"
+                            :value="{{ json_encode($perStats['totalWords']) }}"
+                    ></story-row>
+                    <story-row
+                            :name="{{ json_encode('Total Chars') }}"
+                            :value="{{ json_encode($perStats['totalChars']) }}"
+                    ></story-row>
+                    <story-row
+                            :name="{{ json_encode('Total Entries') }}"
+                            :value="{{ json_encode($perStats['totalEntries']) }}"
+                    ></story-row>
+                </div>
+
+            </div>
         </div>
 
         <div class="col-md-3">
@@ -50,9 +79,15 @@
                             <button type="button" class="btn btn-primary btn-lg width100p">Manage The Story</button>
                         </a>
                     @elseif(auth()->user()->joinedStories->contains($story))
-                        <button type="button" class="btn btn-primary btn-lg width100p">Leave The Story</button>
+                        <a href="/story/{{ $story->id }}/leave">
+                            <button type="button" class="btn btn-primary btn-lg width100p">Leave The Story</button>
+                        </a>
+                    @elseif ( ($users->count() + 1) <= $story->max_participants )
+                        <a href="/story/{{ $story->id }}/join">
+                            <button type="button" class="btn btn-primary btn-lg width100p">Join The Story</button>
+                        </a>
                     @else
-                        <button type="button" class="btn btn-primary btn-lg width100p">Join The Story</button>
+                        Story is full.
                     @endif
                 </div>
             </div>

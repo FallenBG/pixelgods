@@ -8,11 +8,13 @@
         <div class="col-md-9">
 
             <div class="card">
-                <div class="card-header"><h1>{{ isset($story->title) ? $story->title : 'Begin a new story...' }}</h1></div>
-                <form action="/story{{ isset($story->id) ? '/' . $story->id . '/update' : '/create' }}" method="post">
+                <div class="card-header"><h1>{{ $story->title }}</h1></div>
+                <form action="/story/{{$story->id }}/update" method="post">
                     <div class="card-body">
                             @csrf
-                            @include('stories.forms.edit')
+                            @include('stories.forms.edit', [
+                                'create' => 'true'
+                            ])
                     </div>
 
                     <div class="card-footer">
@@ -27,7 +29,11 @@
 
             <div class="card">
                 <div class="card-body">
-                    <button type="button" class="btn btn-primary btn-lg width100p">Delete The Story</button>
+                    <a href="/story/{{$story->id }}">
+                        <button type="button" class="btn btn-primary btn-lg width100p">
+                            Cancle
+                        </button>
+                    </a>
                 </div>
             </div>
 

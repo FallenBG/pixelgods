@@ -662,3 +662,21 @@ label.mt10.valid {
 button.width30p {
     width: 30%;
 }
+
+
+
+
+table.ordinary {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.ordinary th, td {
+    text-align: center;
+    padding: 8px;
+}
+
+table.ordinary tr:nth-child(even) {
+    background-color: #f2f2fd;
+}
+table.ordinary tr:nth-child(odd) {background-color: #fffff8;}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\StoriesEntries;
 use App\Story;
 use App\User;
+use App\UserStory;
 use Carbon\Carbon;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Http\Request;
@@ -49,7 +50,7 @@ class StoryController extends Controller
 //        $entries    = $story->entries()->get();
 //        $users      = $story->members()->get();
 
-        return view('stories.create', compact(['entries', 'users', 'story']));
+        return view('stories.create');
     }
 
     /**
@@ -60,7 +61,18 @@ class StoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->middleware('auth');
+
+        $attributes = $this->validateParams($request);
+        $attributes['owner_id'] = auth()->user()->id;
+        $attributes['finished'] = 0;
+        $attributes['published'] = 0;
+        $attributes['deleted'] = 0;
+//        $attributes['finished'] = 0;
+
+        $story = Story::create($attributes);
+
+        return redirect('/story/'.$story->id);
     }
 
     /**
@@ -74,18 +86,33 @@ class StoryController extends Controller
 //        $this->authorize('update', $story);
 
         //
-        $entries    = $story->entries()->get();
+        $entries    = $story->entries()->with('user')->get();
         $users      = $story->members()->get();
         $chats      = $story->chats()->with('user')->get();
+        $stats      = $story->statistics()->with('user')->get();
+        $perStats   = $this->getPercantageStatistics($stats);
 
-        return view('stories.story', compact(['entries', 'users', 'story', 'chats']));
+
+        return view('stories.story', compact(['entries', 'users', 'story', 'chats', 'stats', 'perStats']));
+    }
+
+    private function getPercantageStatistics($stats) {
+        $perStats = ['totalWords' => 0, 'totalChars' => 0, 'totalEntries' => 0];
+        foreach ($stats as $stat) {
+            $perStats['totalWords']     += $stat->words;
+            $perStats['totalChars']     += $stat->chars;
+            $perStats['totalEntries']   += $stat->entries;
+        }
+        $perStats['pages'] = round($perStats['totalWords'] / 300);
+        return $perStats;
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Story  $story
+     * @param  \App\Story $story
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function edit(Story $story)
     {
@@ -110,6 +137,16 @@ class StoryController extends Controller
     {
 
         $this->authorize('manage', $story);
+
+        $attributes = $this->validateParams($request);
+
+        $story->update($attributes);
+
+        return redirect()->back();
+
+    }
+
+    private function validateParams($request) {
         $attributes = \Request::validate([
             'title'             => ['required', 'max:75'],
             'description'       => ['required', 'max:500'],
@@ -122,14 +159,32 @@ class StoryController extends Controller
         $public = isset($request->public) ? 1 : 0;
         $attributes['public'] = $public;
 
-        $story->update($attributes);
+        return $attributes;
+    }
 
+    public function join(UserStory $us, Story $story)
+    {
 
-//        dd($request);
+        $this->middleware('auth');
+        $us->create([
+            'user_id' => auth()->user()->id,
+            'story_id' => $story->id
+        ]);
 
         return redirect()->back();
+    }
 
+    public function leave(Story $story)
+    {
+        $this->middleware('auth');
+        $us = UserStory::where([
+                    ['user_id', '=', auth()->user()->id],
+                    ['story_id', '=', $story->id]
+                ]);
 
+        $us->delete();
+
+        return redirect()->back();
     }
 
     /**
@@ -159,7 +214,8 @@ class StoryController extends Controller
 
         $name =  $attributes['name'];
         $story->$name = $attributes['value'];
-        $story->save();
+//        dd($attributes['value']);
+        $story->update();
 
         return json_encode(['message' => 'success']);
     }

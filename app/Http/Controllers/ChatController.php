@@ -73,12 +73,12 @@ class ChatController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Chat  $chat
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function update(Request $request, Chat $chat)
     {
         //
-        $validatedData = $this->validateProject();
+        $validatedData = $this->validateData();
         $resp = $chat->create($validatedData);
 
 //        \Log::debug('PUTKA');
@@ -99,7 +99,7 @@ class ChatController extends Controller
         //
     }
 
-    public function validateProject()
+    public function validateData()
     {
         $attributes = \Request::validate(
             [

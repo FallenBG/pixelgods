@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Model;
 class UserStory extends Model
 {
     //
+    protected $guarded = [];
+    public $timestamps = false;
     protected $table = 'users_stories';
 
     public function user()

@@ -6,7 +6,16 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header"><h1>Your Stories</h1></div>
+                <div class="card-header">
+                    <div class="float-left">
+                        <h1>Your Stories</h1>
+                    </div>
+                    <a href="/story/create">
+                        <button type="button" class="btn btn-primary btn-lg float-right">
+                            Create new Story
+                        </button>
+                    </a>
+                </div>
 
                 <div class="card-body">
                     <vuetable v-bind:datadest="{{ json_encode('apiOwnProjects') }}"></vuetable>

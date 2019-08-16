@@ -21,15 +21,24 @@ Route::get('/home', 'HomeController@index');
 
 Route::get('/stories', 'StoryController@index');
 Route::get('/story/create', 'StoryController@create');
+Route::post('/story/create', 'StoryController@store');
 Route::get('/story/{story}', 'StoryController@show');
 Route::get('/story/{story}/edit', 'StoryController@edit');
-Route::post('/story/{story}/updateFinishPublish', 'StoryController@updateFinishPublish');
+Route::get('/story/{story}/join', 'StoryController@join');
+Route::get('/story/{story}/leave', 'StoryController@leave');
+Route::patch('/story/{story}/updateFinishPublish', 'StoryController@updateFinishPublish');
 Route::post('/story/{story}/update', 'StoryController@update');
 Route::patch('/story/{story}/updateNote', 'StoryController@updateNote');
 
 
 Route::get('/story/{story}/chat', 'ChatController@show');
 Route::post('/story/{story}/chat', 'ChatController@update');
+
+
+
+
+Route::get('/story/{story}/entry', 'StoriesEntriesController@show');
+Route::post('/story/{story}/entry', 'StoriesEntriesController@update');
 
 
 

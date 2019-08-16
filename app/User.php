@@ -87,4 +87,10 @@ class User extends Authenticatable
                     ->leftJoin('users_stories', 'stories.id', '=', 'users_stories.story_id')
                     ->orWhere('users_stories.user_id', '=', $this->id);
     }
+
+    public function statistics()
+    {
+        return $this->hasMany(StoryStatistics::class);
+//                    ->where($column);
+    }
 }

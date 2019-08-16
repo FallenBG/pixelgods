@@ -83,5 +83,9 @@ class Story extends Model
 //            ->orderBy('chats.created_at');
     }
 
-
+    public function statistics()
+    {
+        return $this->hasMany(StoryStatistics::class);
+//                    ->where($column);
+    }
 }

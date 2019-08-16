@@ -13,12 +13,13 @@
                     <div class="card-body">
                             @csrf
                             @include('stories.forms.edit', [
-                                'story' => new App\Story
+                                'story' => new App\Story,
+                                'create' => 'false'
                             ])
                     </div>
 
                     <div class="card-footer">
-                        <button type="submit" class="btn btn-primary btn-lg width100p">Update</button>
+                        <button type="submit" class="btn btn-primary btn-lg width100p">Create</button>
                     </div>
                 </form>
             </div>
@@ -29,7 +30,11 @@
 
             <div class="card">
                 <div class="card-body">
-                    <button type="button" class="btn btn-primary btn-lg width100p">Delete The Story</button>
+                    <a href="/stories">
+                        <button type="button" class="btn btn-primary btn-lg width100p">
+                            Cancle
+                        </button>
+                    </a>
                 </div>
             </div>
 

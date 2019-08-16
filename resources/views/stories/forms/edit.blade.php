@@ -8,11 +8,10 @@
         <input type="text" class="form-control" id="title" value="{{ $story->title }}" name="title" required>
     </div>
     <div class="col-sm-4">
-        <button class="btn-lg btn-primary float-right w-50" type="button" id="finished" name="finished"
-                data-toggle="tooltip" data-placement="left" title="Finishing a story will close it for further additions and will allow you to Publish it."
-                onclick="publishFinishStory('finished', '{{(int)!$story->finished }}', '/story/{{$story->id}}/updateFinishPublish')">
-            {{ $story->finished ? 'Unfinish the Story' : 'Finish the story' }}
-        </button>
+        <story-button v-if="{{$create}}"
+                :story="{{ json_encode($story) }}"
+                :prop="{{ json_encode('finish') }}"
+        ></story-button>
     </div>
 </div>
 <div class="form-group row">
@@ -21,17 +20,17 @@
         <textarea cols="30" rows="5" class="form-control" id="description" name="description" required>{{ $story->description }}</textarea>
     </div>
     <div class="col-sm-4">
-        <button class="btn-lg btn-primary float-right w-50"  type="button" id="published" name="published"
-                data-toggle="tooltip" data-placement="left" title="Publish a finished story to the blog so everyone can read it."
-                onclick="publishFinishStory('published', '{{(int)!$story->published }}', '/story/{{$story->id}}/updateFinishPublish')">
-            {{ $story->published ? 'Unpublish the Story' : 'Publish the story' }}
-        </button>
+
+        <story-button v-if="{{$create}}"
+                :story="{{ json_encode($story) }}"
+                :prop="{{ json_encode('publish') }}"
+        ></story-button>
     </div>
 </div>
 <div class="form-group row">
     <label for="genre" class="col-sm-2 col-form-label"
-           data-toggle="tooltip" data-placement="left" title="Write the genre of the story up to 100 chars.">
-        Participants
+           data-toggle="tooltip" data-placement="left" title="Write the genre of the story up to 100 chars. Let them comma separated.">
+        Genre
     </label>
     <div class="col-sm-6">
         <input type="text" class="form-control" id="genre" value="{{ $story->genre }}" name="genre" required>
