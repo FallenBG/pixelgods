@@ -39,6 +39,8 @@ Route::patch('/story/{story}/updateNote', 'StoryController@updateNote');
 Route::post('/story/{story}/delete', 'StoryController@delete');
 
 
+
+
 Route::get('/story/{story}/chat', 'ChatController@show');
 Route::post('/story/{story}/chat', 'ChatController@update');
 
@@ -53,5 +55,6 @@ Route::post('/story/{story}/entry', 'StoriesEntriesController@update');
 
 
 
-Route::get('/apiOwnProjects', 'StoryController@apiOwnProjects');
+Route::get('/apiOwnStories', 'StoryController@apiOwnStories');
 Route::get('/apiJoinedStories', 'StoryController@apiJoinedStories')->name('apiJoinedStories'); // what name does?
+Route::get('/stories/apiSearchStories', 'StoryController@apiSearchStories');

@@ -18,7 +18,7 @@
                 </div>
 
                 <div class="card-body">
-                    <vuetable v-bind:datadest="{{ json_encode('apiOwnProjects') }}"></vuetable>
+                    <vuetable v-bind:datadest="{{ json_encode('apiOwnStories') }}"></vuetable>
                     {{--<vuetable v-bind:datadest="{{ json_encode('https://vuetable.ratiw.net/api/users') }}"></vuetable>--}}
                 </div>
             </div>

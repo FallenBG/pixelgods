@@ -84,8 +84,16 @@ class User extends Authenticatable
     public function stories()
     {
         return $this->ownedStories()
-                    ->leftJoin('users_stories', 'stories.id', '=', 'users_stories.story_id')
-                    ->orWhere('users_stories.user_id', '=', $this->id);
+            ->leftJoin('users_stories', 'stories.id', '=', 'users_stories.story_id')
+            ->orWhere('users_stories.user_id', '=', $this->id);
+    }
+
+    /**
+     * Return all stories that the user owns or is part of.
+     */
+    public function allStories()
+    {
+        return $this->where('deleted', '=', '0');
     }
 
     public function statistics()

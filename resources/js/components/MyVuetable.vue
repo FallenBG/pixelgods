@@ -1,5 +1,22 @@
 <template>
     <div>
+        <div  v-if="datadest == 'apiSearchStories'">
+            <div class="filter-bar ui basic segment grid">
+                <div class="ui form">
+                    <div class="inline field">
+                        <label>Search for:</label>
+                        <input type="text" v-model="filterTitle" class="three wide column"
+                               @keyup.enter="doFilter" placeholder="Title or Description">
+                        <input type="text" v-model="filterDescription" class="three wide column"
+                               @keyup.enter="doFilter" placeholder="Title or Description">
+                        <input type="text" v-model="filterGenre" class="three wide column"
+                               @keyup.enter="doFilter" placeholder="Title or Description">
+                        <button class="btn btn-primary " @click="doFilter">Go</button>
+                        <button class="btn btn-secondary " @click="resetFilter">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <vuetable ref="vuetable"
                   :api-url="datadest"
                   :fields="fields"
@@ -10,15 +27,16 @@
                   scrollVisible="false"
                   :table-height="'100'"
                   @vuetable:pagination-data="onPaginationData"
+                  :append-params="moreParams"
         >
             <div slot="custom-actions" slot-scope="props">
                 <button class="ui basic button" @click="onActionClicked('view-item', props.rowData)">
                     <i class="zoom icon"></i>
                 </button>
-                <button v-if="datadest == 'apiOwnProjects'" class="ui basic button" @click="onActionClicked('edit-item', props.rowData)">
+                <button v-if="datadest == 'apiOwnStories'" class="ui basic button" @click="onActionClicked('edit-item', props.rowData)">
                     <i class="edit icon"></i>
                 </button>
-                <button v-if="datadest == 'apiOwnProjects'" class="ui basic button" @click="onActionClicked('delete-item', props.rowData)">
+                <button v-if="datadest == 'apiOwnStories'" class="ui basic button" @click="onActionClicked('delete-item', props.rowData)">
                     <i class="delete icon"></i>
                 </button>
             </div>
@@ -60,10 +78,30 @@
                         field: "title",
                         direction: "asc"
                     }
-                ]
+                ],
+                moreParams: {},
+                filterTitle: '',
+                filterDescription: '',
+                filterGenre: ''
             };
         },
         methods: {
+            doFilter () {
+                this.moreParams = {
+                    'title': this.filterTitle,
+                    'description': this.filterDescription,
+                    'genre': this.filterGenre
+                };
+                Vue.nextTick( () => this.$refs.vuetable.refresh());
+            },
+            resetFilter () {
+                this.moreParams = {};
+                this.filterTitle = '';
+                this.filterDescription = '';
+                this.filterGenre = '';
+                Vue.nextTick( () => this.$refs.vuetable.refresh());
+            },
+
             onPaginationData(paginationData) {
                 this.$refs.pagination.setPaginationData(paginationData);
                 this.$refs.paginationInfo.setPaginationData(paginationData);

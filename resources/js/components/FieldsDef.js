@@ -21,11 +21,12 @@ export default [
     //     sortField: "id"
     // },
     {
-        // name: "title",
-        name: VuetableFieldTitle,
+        name: "title",
+        // name: VuetableFieldTitle,
         title: '<i class="grey mail outline icon"></i>Title',
         width: "25%",
-        sortField: "title",
+        // sortField: "title",
+        sortField: 'title',
         titleField: {
             title: (data) => data.title,
             id: (data) => data.id
