@@ -18,8 +18,15 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index');
+Route::get('/faq', 'HomeController@faq');
+
+
+Route::get('/writers', 'UserController@index');
+Route::get('/writer/{profile}', 'UserController@show');
+Route::get('/writer/{profile}/edit', 'UserController@edit');
 
 Route::get('/stories', 'StoryController@index');
+Route::get('/stories/search', 'StoryController@search');
 Route::get('/story/create', 'StoryController@create');
 Route::post('/story/create', 'StoryController@store');
 Route::get('/story/{story}', 'StoryController@show');
@@ -29,6 +36,7 @@ Route::get('/story/{story}/leave', 'StoryController@leave');
 Route::patch('/story/{story}/updateFinishPublish', 'StoryController@updateFinishPublish');
 Route::post('/story/{story}/update', 'StoryController@update');
 Route::patch('/story/{story}/updateNote', 'StoryController@updateNote');
+Route::post('/story/{story}/delete', 'StoryController@delete');
 
 
 Route::get('/story/{story}/chat', 'ChatController@show');

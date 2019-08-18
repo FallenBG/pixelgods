@@ -1983,9 +1983,10 @@ __webpack_require__.r(__webpack_exports__);
       this.$refs.vuetable.changePage(page);
     },
     onActionClicked: function onActionClicked(action, data) {
-      console.log(action);
-      console.log(data);
+      var _this = this;
 
+      // console.log(action);
+      // console.log(data);
       if (action == 'delete-item') {
         sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
           title: 'Are you sure?',
@@ -1997,18 +1998,21 @@ __webpack_require__.r(__webpack_exports__);
           confirmButtonText: 'Yes, delete it!'
         }).then(function (result) {
           if (result.value) {
-            sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Deleted!', 'Your file has been deleted.', 'success');
+            axios['post']('/story/' + data.id + '/delete').then(function (response) {
+              sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Deleted!', 'Your Story has been deleted.', 'success');
+
+              _this.$refs.vuetable.reload();
+            })["catch"](function (error) {
+              console.log(error);
+              sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Delete failed!', 'Something went wrong. Please try again.', 'warning');
+            });
           }
         });
+      } else if (action == 'edit-item') {
+        window.location.href = '/story/' + data.id + '/edit';
       } else {
-        sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
-          title: action,
-          text: data.title,
-          type: 'success',
-          confirmButtonText: 'Cool'
-        });
+        window.location.href = '/story/' + data.id;
       } //https://sweetalert2.github.io/#examples
-      // sweetAlert(action, data.title);
 
     }
   },
@@ -54848,31 +54852,41 @@ var render = function() {
                   [_c("i", { staticClass: "zoom icon" })]
                 ),
                 _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass: "ui basic button",
-                    on: {
-                      click: function($event) {
-                        return _vm.onActionClicked("edit-item", props.rowData)
-                      }
-                    }
-                  },
-                  [_c("i", { staticClass: "edit icon" })]
-                ),
+                _vm.datadest == "apiOwnProjects"
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "ui basic button",
+                        on: {
+                          click: function($event) {
+                            return _vm.onActionClicked(
+                              "edit-item",
+                              props.rowData
+                            )
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "edit icon" })]
+                    )
+                  : _vm._e(),
                 _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass: "ui basic button",
-                    on: {
-                      click: function($event) {
-                        return _vm.onActionClicked("delete-item", props.rowData)
-                      }
-                    }
-                  },
-                  [_c("i", { staticClass: "delete icon" })]
-                )
+                _vm.datadest == "apiOwnProjects"
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "ui basic button",
+                        on: {
+                          click: function($event) {
+                            return _vm.onActionClicked(
+                              "delete-item",
+                              props.rowData
+                            )
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "delete icon" })]
+                    )
+                  : _vm._e()
               ])
             }
           }
@@ -70599,22 +70613,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _VuetableFieldTitle_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./VuetableFieldTitle.vue */ "./resources/js/components/VuetableFieldTitle.vue");
 
 
-/* harmony default export */ __webpack_exports__["default"] = ([{
-  name: _VuetableFieldSwitch_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
-  title: 'Toggle Switch',
-  titleClass: 'center aligned',
-  dataClass: 'left aligned',
-  width: "6%",
-  "switch": {
-    // label: 'Male?',
-    label: function label(data) {
-      return data.name;
-    },
-    field: function field(data) {
-      return data.gender === 'M';
-    }
-  }
-}, // {
+/* harmony default export */ __webpack_exports__["default"] = ([// {
+//     name: VuetableFieldSwitch,
+//     title: 'Toggle Switch',
+//     titleClass: 'center aligned',
+//     dataClass: 'left aligned',
+//     width: "6%",
+//     switch: {
+//         // label: 'Male?',
+//         label: (data) => data.name,
+//         field: (data) => data.gender === 'M',
+//     }
+// },
+// {
 //     name: "id",
 //     title: '<i class="grey user outline icon"></i>ID',
 //     width: "6%",
@@ -70624,7 +70635,7 @@ __webpack_require__.r(__webpack_exports__);
   // name: "title",
   name: _VuetableFieldTitle_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
   title: '<i class="grey mail outline icon"></i>Title',
-  width: "20%",
+  width: "25%",
   sortField: "title",
   titleField: {
     title: function title(data) {
@@ -70643,22 +70654,22 @@ __webpack_require__.r(__webpack_exports__);
 }, {
   name: "participants",
   title: '<i class="grey mail outline icon"></i>Joined',
-  width: "8%" // sortField: "participants"
+  width: "7%" // sortField: "participants"
 
 }, {
   name: "created_at",
-  title: '<i class="grey mail outline icon"></i>created_at',
-  width: "10%",
+  title: '<i class="grey mail outline icon"></i>Created',
+  width: "12%",
   sortField: "created_at"
 }, {
   name: "updated_at",
-  title: '<i class="grey mail outline icon"></i>updated_at',
-  width: "10%",
+  title: '<i class="grey mail outline icon"></i>Updated',
+  width: "12%",
   sortField: "updated_at"
 }, {
   name: "custom-actions",
   title: "Actions",
-  width: "16%",
+  width: "12%",
   titleClass: "center aligned",
   dataClass: "center aligned" // {
   //     name: "group.description",

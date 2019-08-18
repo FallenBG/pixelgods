@@ -664,6 +664,11 @@ button.width30p {
 }
 
 
+img.logo-header {
+    margin-top: -40px;
+    margin-bottom: -26px;
+}
+
 
 
 table.ordinary {
@@ -680,3 +685,7 @@ table.ordinary tr:nth-child(even) {
     background-color: #f2f2fd;
 }
 table.ordinary tr:nth-child(odd) {background-color: #fffff8;}
+
+.ui.button {
+    padding: 0.7em 0.3em 0.7em 1em !important;
+}

@@ -15,10 +15,10 @@
                 <button class="ui basic button" @click="onActionClicked('view-item', props.rowData)">
                     <i class="zoom icon"></i>
                 </button>
-                <button class="ui basic button" @click="onActionClicked('edit-item', props.rowData)">
+                <button v-if="datadest == 'apiOwnProjects'" class="ui basic button" @click="onActionClicked('edit-item', props.rowData)">
                     <i class="edit icon"></i>
                 </button>
-                <button class="ui basic button" @click="onActionClicked('delete-item', props.rowData)">
+                <button v-if="datadest == 'apiOwnProjects'" class="ui basic button" @click="onActionClicked('delete-item', props.rowData)">
                     <i class="delete icon"></i>
                 </button>
             </div>
@@ -68,40 +68,51 @@
                 this.$refs.pagination.setPaginationData(paginationData);
                 this.$refs.paginationInfo.setPaginationData(paginationData);
             },
+
             onChangePage(page) {
                 this.$refs.vuetable.changePage(page);
             },
-                onActionClicked(action, data) {
-                    console.log(action);
-                    console.log(data);
-                    if (action == 'delete-item') {
-                        sweetAlert.fire({
-                            title: 'Are you sure?',
-                            text: "You won't be able to revert this!",
-                            type: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Yes, delete it!'
-                        }).then((result) => {
-                            if (result.value) {
-                            sweetAlert.fire(
-                                'Deleted!',
-                                'Your file has been deleted.',
-                                'success'
-                            )
+
+            onActionClicked(action, data) {
+                // console.log(action);
+                // console.log(data);
+                if (action == 'delete-item') {
+                    sweetAlert.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.value) {
+                            axios['post']('/story/'+data.id+'/delete')
+                                .then(response => {
+                                    sweetAlert.fire(
+                                        'Deleted!',
+                                        'Your Story has been deleted.',
+                                        'success'
+                                    );
+                                    this.$refs.vuetable.reload();
+                                })
+                                .catch(error => {
+                                    console.log(error);
+                                    sweetAlert.fire(
+                                        'Delete failed!',
+                                        'Something went wrong. Please try again.',
+                                        'warning'
+                                    )
+
+                                });
                         }
                     })
-                    } else {
-                        sweetAlert.fire({
-                            title: action,
-                            text: data.title,
-                            type: 'success',
-                            confirmButtonText: 'Cool'
-                        });
-                    }
-                    //https://sweetalert2.github.io/#examples
-                // sweetAlert(action, data.title);
+                } else if (action == 'edit-item') {
+                    window.location.href = '/story/'+data.id+'/edit';
+                } else {
+                    window.location.href = '/story/'+data.id;
+                }
+                //https://sweetalert2.github.io/#examples
             },
         },
         props: ['datadest'],

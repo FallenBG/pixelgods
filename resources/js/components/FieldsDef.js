@@ -2,18 +2,18 @@ import VuetableFieldSwitch from './VuetableFieldSwitch.vue'
 import VuetableFieldTitle from './VuetableFieldTitle.vue'
 
 export default [
-    {
-        name: VuetableFieldSwitch,
-        title: 'Toggle Switch',
-        titleClass: 'center aligned',
-        dataClass: 'left aligned',
-        width: "6%",
-        switch: {
-            // label: 'Male?',
-            label: (data) => data.name,
-            field: (data) => data.gender === 'M',
-        }
-    },
+    // {
+    //     name: VuetableFieldSwitch,
+    //     title: 'Toggle Switch',
+    //     titleClass: 'center aligned',
+    //     dataClass: 'left aligned',
+    //     width: "6%",
+    //     switch: {
+    //         // label: 'Male?',
+    //         label: (data) => data.name,
+    //         field: (data) => data.gender === 'M',
+    //     }
+    // },
     // {
     //     name: "id",
     //     title: '<i class="grey user outline icon"></i>ID',
@@ -24,7 +24,7 @@ export default [
         // name: "title",
         name: VuetableFieldTitle,
         title: '<i class="grey mail outline icon"></i>Title',
-        width: "20%",
+        width: "25%",
         sortField: "title",
         titleField: {
             title: (data) => data.title,
@@ -41,25 +41,25 @@ export default [
     {
         name: "participants",
         title: '<i class="grey mail outline icon"></i>Joined',
-        width: "8%",
+        width: "7%",
         // sortField: "participants"
     },
     {
         name: "created_at",
-        title: '<i class="grey mail outline icon"></i>created_at',
-        width: "10%",
+        title: '<i class="grey mail outline icon"></i>Created',
+        width: "12%",
         sortField: "created_at"
     },
     {
         name: "updated_at",
-        title: '<i class="grey mail outline icon"></i>updated_at',
-        width: "10%",
+        title: '<i class="grey mail outline icon"></i>Updated',
+        width: "12%",
         sortField: "updated_at"
     },
     {
         name: "custom-actions",
         title: "Actions",
-        width: "16%",
+        width: "12%",
         titleClass: "center aligned",
         dataClass: "center aligned"
     }

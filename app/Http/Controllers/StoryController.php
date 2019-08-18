@@ -31,11 +31,26 @@ class StoryController extends Controller
      */
     public function index()
     {
-        $ownedStories = auth()->user()->ownedStories()->orderBy('updated_at', 'desc')->get();
-        $joinedStories = auth()->user()->joinedStories()->orderBy('updated_at', 'desc')->get();
+        $ownedStories = auth()->user()->ownedStories()->where('deleted', '=', '0')->orderBy('updated_at', 'desc')->get();
+        $joinedStories = auth()->user()->joinedStories()->where('deleted', '=', '0')->orderBy('updated_at', 'desc')->get();
 
         return view('home', compact(['ownedStories', 'joinedStories']));
 
+    }
+
+    public function search()
+    {
+
+    }
+
+    public function delete(Story $story)
+    {
+        $this->authorize('manage', $story);
+        $story->deleted = 1;
+        $story->update();
+
+        return json_encode(['message' => 'success']);
+//        return redirect()->back();
     }
 
     /**
@@ -269,7 +284,7 @@ class StoryController extends Controller
         $sortBy = $sorting[0];
         $sortOrder = $sorting[1];
 //        $ownedStories = auth()->user()->ownedStories()->orderBy('updated_at', 'desc')->get();
-        $joinedStories = auth()->user()->joinedStories()->orderBy($sortBy, $sortOrder)->paginate(\request('per_page'));
+        $joinedStories = auth()->user()->joinedStories()->where('deleted', '=', '0')->orderBy($sortBy, $sortOrder)->paginate(\request('per_page'));
 
         $json = [
             "total" => $joinedStories->total(),
@@ -311,7 +326,7 @@ class StoryController extends Controller
         $sortBy = $sorting[0];
         $sortOrder = $sorting[1];
 //        $ownedStories = auth()->user()->ownedStories()->orderBy('updated_at', 'desc')->get();
-        $ownedStories = auth()->user()->ownedStories()->orderBy($sortBy, $sortOrder)->paginate(\request('per_page'));
+        $ownedStories = auth()->user()->ownedStories()->where('deleted', '=', '0')->orderBy($sortBy, $sortOrder)->paginate(\request('per_page'));
 
 
         $json = [
