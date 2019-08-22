@@ -27,7 +27,6 @@ Vue.component('story-chat', require('./components/story/StoryChat').default);
 Vue.component('story-button', require('./components/story/StoryButton').default);
 Vue.component('story-body', require('./components/story/StoryBody').default);
 Vue.component('story-row', require('./components/story/StoryRow').default);
-Vue.component('filter-bar', require('./components/story/FilterBar').default);
 Vue.component('vuetable', require('./App.vue').default);
 
 

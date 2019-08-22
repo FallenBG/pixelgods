@@ -25,4 +25,14 @@ class HomeController extends Controller
     {
         return view('home');
     }
+
+    /**
+     * Show the FAQ
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function faq()
+    {
+        return view('faq');
+    }
 }

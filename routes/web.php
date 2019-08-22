@@ -53,8 +53,6 @@ Route::post('/story/{story}/entry', 'StoriesEntriesController@update');
 
 
 
-
-
 Route::get('/apiOwnStories', 'StoryController@apiOwnStories');
 Route::get('/apiJoinedStories', 'StoryController@apiJoinedStories')->name('apiJoinedStories'); // what name does?
 Route::get('/stories/apiSearchStories', 'StoryController@apiSearchStories');
