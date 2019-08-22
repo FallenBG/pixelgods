@@ -10,7 +10,7 @@
             <a :href="/story/+storyId(rowField.titleField.id, rowData)">
                 {{titleText(rowField.titleField.title, rowData)}}
             </a>
-            <label v-if="rowField.titleField.label">{{ label(rowField.titleField.title, 'asd') }}</label>
+            <label v-if="rowField.titleField.label">{{ label(rowField.titleField.title, 'title') }}</label>
         </div>
     </td>
 </template>

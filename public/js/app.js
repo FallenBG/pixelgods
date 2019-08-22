@@ -1953,6 +1953,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1971,10 +1989,37 @@ __webpack_require__.r(__webpack_exports__);
       sortOrder: [{
         field: "title",
         direction: "asc"
-      }]
+      }],
+      moreParams: {},
+      filterTitle: '',
+      filterDescription: '',
+      filterGenre: ''
     };
   },
   methods: {
+    doFilter: function doFilter() {
+      var _this = this;
+
+      this.moreParams = {
+        'title': this.filterTitle,
+        'description': this.filterDescription,
+        'genre': this.filterGenre
+      };
+      Vue.nextTick(function () {
+        return _this.$refs.vuetable.refresh();
+      });
+    },
+    resetFilter: function resetFilter() {
+      var _this2 = this;
+
+      this.moreParams = {};
+      this.filterTitle = '';
+      this.filterDescription = '';
+      this.filterGenre = '';
+      Vue.nextTick(function () {
+        return _this2.$refs.vuetable.refresh();
+      });
+    },
     onPaginationData: function onPaginationData(paginationData) {
       this.$refs.pagination.setPaginationData(paginationData);
       this.$refs.paginationInfo.setPaginationData(paginationData);
@@ -1983,9 +2028,10 @@ __webpack_require__.r(__webpack_exports__);
       this.$refs.vuetable.changePage(page);
     },
     onActionClicked: function onActionClicked(action, data) {
-      console.log(action);
-      console.log(data);
+      var _this3 = this;
 
+      // console.log(action);
+      // console.log(data);
       if (action == 'delete-item') {
         sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
           title: 'Are you sure?',
@@ -1997,18 +2043,21 @@ __webpack_require__.r(__webpack_exports__);
           confirmButtonText: 'Yes, delete it!'
         }).then(function (result) {
           if (result.value) {
-            sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Deleted!', 'Your file has been deleted.', 'success');
+            axios['post']('/story/' + data.id + '/delete').then(function (response) {
+              sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Deleted!', 'Your Story has been deleted.', 'success');
+
+              _this3.$refs.vuetable.reload();
+            })["catch"](function (error) {
+              console.log(error);
+              sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire('Delete failed!', 'Something went wrong. Please try again.', 'warning');
+            });
           }
         });
+      } else if (action == 'edit-item') {
+        window.location.href = '/story/' + data.id + '/edit';
       } else {
-        sweetalert2__WEBPACK_IMPORTED_MODULE_4___default.a.fire({
-          title: action,
-          text: data.title,
-          type: 'success',
-          confirmButtonText: 'Cool'
-        });
+        window.location.href = '/story/' + data.id;
       } //https://sweetalert2.github.io/#examples
-      // sweetAlert(action, data.title);
 
     }
   },
@@ -54817,6 +54866,156 @@ var render = function() {
   return _c(
     "div",
     [
+      _vm.datadest == "apiSearchStories"
+        ? _c("div", [
+            _c("div", { staticClass: "filter-bar ui basic segment grid" }, [
+              _c("div", { staticClass: "ui form" }, [
+                _c("div", { staticClass: "inline field" }, [
+                  _c("label", [_vm._v("Search for:")]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.filterTitle,
+                        expression: "filterTitle"
+                      }
+                    ],
+                    staticClass: "three wide column",
+                    attrs: {
+                      type: "text",
+                      placeholder: "Title or Description"
+                    },
+                    domProps: { value: _vm.filterTitle },
+                    on: {
+                      keyup: function($event) {
+                        if (
+                          !$event.type.indexOf("key") &&
+                          _vm._k(
+                            $event.keyCode,
+                            "enter",
+                            13,
+                            $event.key,
+                            "Enter"
+                          )
+                        ) {
+                          return null
+                        }
+                        return _vm.doFilter($event)
+                      },
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.filterTitle = $event.target.value
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.filterDescription,
+                        expression: "filterDescription"
+                      }
+                    ],
+                    staticClass: "three wide column",
+                    attrs: {
+                      type: "text",
+                      placeholder: "Title or Description"
+                    },
+                    domProps: { value: _vm.filterDescription },
+                    on: {
+                      keyup: function($event) {
+                        if (
+                          !$event.type.indexOf("key") &&
+                          _vm._k(
+                            $event.keyCode,
+                            "enter",
+                            13,
+                            $event.key,
+                            "Enter"
+                          )
+                        ) {
+                          return null
+                        }
+                        return _vm.doFilter($event)
+                      },
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.filterDescription = $event.target.value
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.filterGenre,
+                        expression: "filterGenre"
+                      }
+                    ],
+                    staticClass: "three wide column",
+                    attrs: {
+                      type: "text",
+                      placeholder: "Title or Description"
+                    },
+                    domProps: { value: _vm.filterGenre },
+                    on: {
+                      keyup: function($event) {
+                        if (
+                          !$event.type.indexOf("key") &&
+                          _vm._k(
+                            $event.keyCode,
+                            "enter",
+                            13,
+                            $event.key,
+                            "Enter"
+                          )
+                        ) {
+                          return null
+                        }
+                        return _vm.doFilter($event)
+                      },
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.filterGenre = $event.target.value
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary ",
+                      on: { click: _vm.doFilter }
+                    },
+                    [_vm._v("Go")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-secondary ",
+                      on: { click: _vm.resetFilter }
+                    },
+                    [_vm._v("Reset")]
+                  )
+                ])
+              ])
+            ])
+          ])
+        : _vm._e(),
+      _vm._v(" "),
       _c("vuetable", {
         ref: "vuetable",
         attrs: {
@@ -54827,7 +55026,8 @@ var render = function() {
           "per-page": 5,
           "pagination-path": "",
           scrollVisible: "false",
-          "table-height": "100"
+          "table-height": "100",
+          "append-params": _vm.moreParams
         },
         on: { "vuetable:pagination-data": _vm.onPaginationData },
         scopedSlots: _vm._u([
@@ -54848,31 +55048,41 @@ var render = function() {
                   [_c("i", { staticClass: "zoom icon" })]
                 ),
                 _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass: "ui basic button",
-                    on: {
-                      click: function($event) {
-                        return _vm.onActionClicked("edit-item", props.rowData)
-                      }
-                    }
-                  },
-                  [_c("i", { staticClass: "edit icon" })]
-                ),
+                _vm.datadest == "apiOwnStories"
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "ui basic button",
+                        on: {
+                          click: function($event) {
+                            return _vm.onActionClicked(
+                              "edit-item",
+                              props.rowData
+                            )
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "edit icon" })]
+                    )
+                  : _vm._e(),
                 _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass: "ui basic button",
-                    on: {
-                      click: function($event) {
-                        return _vm.onActionClicked("delete-item", props.rowData)
-                      }
-                    }
-                  },
-                  [_c("i", { staticClass: "delete icon" })]
-                )
+                _vm.datadest == "apiOwnStories"
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "ui basic button",
+                        on: {
+                          click: function($event) {
+                            return _vm.onActionClicked(
+                              "delete-item",
+                              props.rowData
+                            )
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "delete icon" })]
+                    )
+                  : _vm._e()
               ])
             }
           }
@@ -54993,7 +55203,9 @@ var render = function() {
           _vm._v(" "),
           _vm.rowField.titleField.label
             ? _c("label", [
-                _vm._v(_vm._s(_vm.label(_vm.rowField.titleField.title, "asd")))
+                _vm._v(
+                  _vm._s(_vm.label(_vm.rowField.titleField.title, "title"))
+                )
               ])
             : _vm._e()
         ])
@@ -70599,33 +70811,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _VuetableFieldTitle_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./VuetableFieldTitle.vue */ "./resources/js/components/VuetableFieldTitle.vue");
 
 
-/* harmony default export */ __webpack_exports__["default"] = ([{
-  name: _VuetableFieldSwitch_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
-  title: 'Toggle Switch',
-  titleClass: 'center aligned',
-  dataClass: 'left aligned',
-  width: "6%",
-  "switch": {
-    // label: 'Male?',
-    label: function label(data) {
-      return data.name;
-    },
-    field: function field(data) {
-      return data.gender === 'M';
-    }
-  }
-}, // {
+/* harmony default export */ __webpack_exports__["default"] = ([// {
+//     name: VuetableFieldSwitch,
+//     title: 'Toggle Switch',
+//     titleClass: 'center aligned',
+//     dataClass: 'left aligned',
+//     width: "6%",
+//     switch: {
+//         // label: 'Male?',
+//         label: (data) => data.name,
+//         field: (data) => data.gender === 'M',
+//     }
+// },
+// {
 //     name: "id",
 //     title: '<i class="grey user outline icon"></i>ID',
 //     width: "6%",
 //     sortField: "id"
 // },
 {
-  // name: "title",
-  name: _VuetableFieldTitle_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
+  name: "title",
+  // name: VuetableFieldTitle,
   title: '<i class="grey mail outline icon"></i>Title',
-  width: "20%",
-  sortField: "title",
+  width: "25%",
+  // sortField: "title",
+  sortField: 'title',
   titleField: {
     title: function title(data) {
       return data.title;
@@ -70643,22 +70853,22 @@ __webpack_require__.r(__webpack_exports__);
 }, {
   name: "participants",
   title: '<i class="grey mail outline icon"></i>Joined',
-  width: "8%" // sortField: "participants"
+  width: "7%" // sortField: "participants"
 
 }, {
   name: "created_at",
-  title: '<i class="grey mail outline icon"></i>created_at',
-  width: "10%",
+  title: '<i class="grey mail outline icon"></i>Created',
+  width: "12%",
   sortField: "created_at"
 }, {
   name: "updated_at",
-  title: '<i class="grey mail outline icon"></i>updated_at',
-  width: "10%",
+  title: '<i class="grey mail outline icon"></i>Updated',
+  width: "12%",
   sortField: "updated_at"
 }, {
   name: "custom-actions",
   title: "Actions",
-  width: "16%",
+  width: "12%",
   titleClass: "center aligned",
   dataClass: "center aligned" // {
   //     name: "group.description",

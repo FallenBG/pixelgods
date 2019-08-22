@@ -8,6 +8,7 @@ use App\User;
 use App\UserStory;
 use Carbon\Carbon;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -31,11 +32,33 @@ class StoryController extends Controller
      */
     public function index()
     {
-        $ownedStories = auth()->user()->ownedStories()->orderBy('updated_at', 'desc')->get();
-        $joinedStories = auth()->user()->joinedStories()->orderBy('updated_at', 'desc')->get();
+        $this->middleware('auth');
+
+        $ownedStories = auth()->user()->ownedStories()->where('deleted', '=', '0')->where('deleted', '=', '0');
+        $joinedStories = auth()->user()->joinedStories()->where('deleted', '=', '0')->orderBy('updated_at', 'desc')->get();
 
         return view('home', compact(['ownedStories', 'joinedStories']));
 
+    }
+
+    public function search()
+    {
+        $this->middleware('auth');
+
+        return view('stories.search');
+        $stories = Story::all()->where('deleted', '=', '0')->where('deleted', '=', '0');
+
+
+    }
+
+    public function delete(Story $story)
+    {
+        $this->authorize('manage', $story);
+        $story->deleted = 1;
+        $story->update();
+
+        return json_encode(['message' => 'success']);
+//        return redirect()->back();
     }
 
     /**
@@ -261,71 +284,93 @@ class StoryController extends Controller
     /**
      * Call from the stories main page to show user's stories he joined
      *
-     * @return json_encode string
+     * @return json_encoded
      */
     public function apiJoinedStories()
     {
-        $sorting = explode('|', \request('sort'));
-        $sortBy = $sorting[0];
-        $sortOrder = $sorting[1];
-//        $ownedStories = auth()->user()->ownedStories()->orderBy('updated_at', 'desc')->get();
-        $joinedStories = auth()->user()->joinedStories()->orderBy($sortBy, $sortOrder)->paginate(\request('per_page'));
-
-        $json = [
-            "total" => $joinedStories->total(),
-            "per_page" => \request('per_page'),
-            "current_page" => $joinedStories->currentPage(),
-            "last_page" => $joinedStories->lastPage(),
-            "next_page_url" => $joinedStories->nextPageUrl(),
-            "prev_page_url" => $joinedStories->previousPageUrl(),
-            "from" => $joinedStories->firstItem(),
-            "to" => $joinedStories->lastItem(),
-        ];
-        $data = [];
-        foreach ($joinedStories as $story) {
-            $data[] = [
-                'id'            => $story->id,
-                'title'         => $story->title,
-                'description'   => $story->description,
-                'participants'  => $story->members()->count(),
-                'created_at'    => Carbon::parse($story->created_at)->diffForHumans(),
-                'updated_at'    => Carbon::parse($story->updated_at)->diffForHumans(),
-                'public'        => $story->public,
-                'finished'      => $story->finished,
-                'published'     => $story->published,
-            ];
-        }
-        $json['data'] = $data;
-
-        return json_encode($json);
+        return $this->handleApiData('joinedStories');
     }
 
     /**
      * Call from the stories main page to show user's owned stories
      *
-     * @return json_encode string
+     * @return json_encoded
      */
-    public function apiOwnProjects()
+    public function apiOwnStories()
+    {
+        return $this->handleApiData('ownedStories');
+    }
+
+    /**
+     * Show stories that are not owned, not joined and not deleted.
+     *
+     * @return json_encoded
+     */
+    public function apiSearchStories()
     {
         $sorting = explode('|', \request('sort'));
         $sortBy = $sorting[0];
         $sortOrder = $sorting[1];
+        $title = \request('title');;
+        $description = \request('description');
+        $genre = \request('genre');
+        $stories = Story::where('deleted', '=', '0')
+            ->leftJoin('users_stories', 'stories.id', '=', 'users_stories.story_id')
+//          This is how to make orWhere
+//            ->where(function (Builder $query) use ($titleDescription) {
+//                return $query->where('title', 'like', '%'.$titleDescription.'%')
+//                    ->orWhere('description', 'like', '%'.$titleDescription.'%');
+//            })
+            ->where('title', 'like', '%'.$title.'%')
+            ->where('description', 'like', '%'.$description.'%')
+            ->where('genre', 'like', '%'.$genre.'%')
+            ->where('owner_id', '!=', auth()->user()->id)
+            ->where('users_stories.user_id', NULL)
+            ->orderBy($sortBy, $sortOrder)
+            ->paginate(\request('per_page'))
+//          ->dd();
+        ;
+
+        return json_encode($this->apiDataHelper($stories));
+
+    }
+
+
+    /**
+     * This will handle the DataTable API calls.
+     *
+     * @param $functionName - The model function to call
+     * @return json_encoded result
+     */
+    protected function handleApiData($functionName) {
+        $sorting = explode('|', \request('sort'));
+        $sortBy = $sorting[0];
+        $sortOrder = $sorting[1];
 //        $ownedStories = auth()->user()->ownedStories()->orderBy('updated_at', 'desc')->get();
-        $ownedStories = auth()->user()->ownedStories()->orderBy($sortBy, $sortOrder)->paginate(\request('per_page'));
+        $stories = auth()->user()->$functionName()->where('deleted', '=', '0')->orderBy($sortBy, $sortOrder)->paginate(\request('per_page'));
 
+        return json_encode($this->apiDataHelper($stories));
+    }
 
+    /**
+     * The main part that is simmilar to all.
+     *
+     * @param $stories
+     * @return array
+     */
+    private function apiDataHelper($stories) {
         $json = [
-            "total" => $ownedStories->total(),
+            "total" => $stories->total(),
             "per_page" => \request('per_page'),
-            "current_page" => $ownedStories->currentPage(),
-            "last_page" => $ownedStories->lastPage(),
-            "next_page_url" => $ownedStories->nextPageUrl(),
-            "prev_page_url" => $ownedStories->previousPageUrl(),
-            "from" => $ownedStories->firstItem(),
-            "to" => $ownedStories->lastItem(),
+            "current_page" => $stories->currentPage(),
+            "last_page" => $stories->lastPage(),
+            "next_page_url" => $stories->nextPageUrl(),
+            "prev_page_url" => $stories->previousPageUrl(),
+            "from" => $stories->firstItem(),
+            "to" => $stories->lastItem(),
         ];
         $data = [];
-        foreach ($ownedStories as $story) {
+        foreach ($stories as $story) {
             $data[] = [
                 'id'            => $story->id,
                 'title'         => $story->title,
@@ -340,6 +385,6 @@ class StoryController extends Controller
         }
         $json['data'] = $data;
 
-        return json_encode($json);
+        return $json;
     }
 }
